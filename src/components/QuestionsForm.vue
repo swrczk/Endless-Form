@@ -1,16 +1,39 @@
 <template>
     <div>
-        <b-form @submit="onSubmit" @reset="onReset" v-if="show">
-            <div v-for="(item, qindex) in form" :key="qindex" class="m-5">
+        <b-form
+            @submit="onSubmit"
+            @reset="onReset"
+            v-if="show"
+            class="m-5 align-self-end"
+        >
+            <div
+                v-for="(item, questionIndex) in form"
+                :key="questionIndex"
+                class="mx-5"
+            >
+                <div class="d-flex justify-content-end">
+                    <b-button
+                        variant="outline-secondary"
+                        @click="deleteQuestion(questionIndex)"
+                        class="border-0"
+                    >
+                        X
+                    </b-button>
+                </div>
+
                 <b-form-group
                     label="Enter the question:"
-                    label-for="input-1"
+                    :label-for="'q[' + questionIndex + ']'"
                     description="Try to make it a closed question."
+                    :invalid-feedback="invalidQuestionFeedback"
+                    label-size="lg"
                 >
                     <b-form-input
-                        v-model="item.question"
+                        v-model="item.content"
                         type="text"
                         placeholder="Enter question"
+                        :state="isQuestionNotEmpty(questionIndex)"
+                        :name="'q[' + questionIndex + ']'"
                         required
                     ></b-form-input>
                 </b-form-group>
@@ -18,23 +41,35 @@
                 <div
                     v-for="(answer, index) in item.answers"
                     :key="index"
-                    class="my-2"
+                    class="my-2 ms-5"
                 >
-                    <b-form-group label="Enter answer:" label-for="input-2">
+                    <b-form-group
+                        label="Enter answer:"
+                        :label-for="'a[' + questionIndex + '][' + index + ']'"
+                        :invalid-feedback="invalidAnswersFeedback"
+                    >
                         <b-form-input
                             :value="answer.value"
                             v-model="answer.value"
                             placeholder="Enter answer"
-                            @change="onChangeInput(qindex)"
+                            :name="'a[' + questionIndex + '][' + index + ']'"
+                            @change="onChangeInput(questionIndex)"
+                            :state="hasEnoughAnswers(questionIndex)"
                         ></b-form-input>
+                    </b-form-group>
 
+                    <b-form-group
+                        :label-for="'ch[' + questionIndex + '][' + index + ']'"
+                        :invalid-feedback="invalidCorrectAnswerFeedback"
+                        :state="hasCorrectAnswer(questionIndex)"
+                    >
                         <b-form-checkbox
                             v-model="answer.isCorrect"
-                            name="checkbox-1"
-                            value="correct"
-                            unchecked-value="correct"
+                            :name="'ch[' + questionIndex + '][' + index + ']'"
+                            value.boolean="true"
+                            unchecked-value.boolean="false"
                         >
-                            Correct answer
+                            &nbsp; Correct answer
                         </b-form-checkbox>
                     </b-form-group>
                 </div>
@@ -61,11 +96,15 @@ export default {
         return {
             form: [
                 {
-                    question: "",
+                    content: "",
                     answers: [{ value: "", isCorrect: false }]
                 }
             ],
-            show: true
+            show: true,
+            invalidQuestionFeedback:
+                "Question is not correct: enter content of question",
+            invalidAnswersFeedback: "Not enough answers",
+            invalidCorrectAnswerFeedback: "At least one answer must be correct"
         }
     },
     methods: {
@@ -78,9 +117,8 @@ export default {
             // Reset our form values
             this.form = [
                 {
-                    question: "",
-                    answers: [{ value: "", isCorrect: false }],
-                    checked: []
+                    content: "",
+                    answers: [{ value: "", isCorrect: false }]
                 }
             ]
             // Trick to reset/clear native browser form validation state
@@ -97,14 +135,33 @@ export default {
         },
         addQuestion() {
             this.form.push({
-                question: "",
+                content: "",
                 answers: [{ value: "", isCorrect: false }]
             })
+        },
+        deleteQuestion(questionIndex) {
+            this.form = this.form.filter(
+                (item, index) => index !== questionIndex
+            )
+        },
+        isQuestionNotEmpty(questionIndex) {
+            return this.form[questionIndex].content !== ""
+        },
+        hasCorrectAnswer(questionIndex) {
+            return this.form[questionIndex].answers.reduce((acc, item) => {
+                if (item.isCorrect) {
+                    acc = true
+                }
+                return acc
+            }, false)
+        },
+        hasEnoughAnswers(questionIndex) {
+            return this.form[questionIndex].answers.length >= 3
         }
     }
 }
 </script>
-<style>
+<style scoped>
 button {
     margin-right: 1em;
 }
