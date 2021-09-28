@@ -1,19 +1,19 @@
 <template>
   <div >
     <!-- <img alt="Vue logo" src="./assets/logo.png"> -->
-    <CustomForm />
+    <!-- <CustomForm /> -->
     <QuestionsForm />
   </div>
 </template>
 
 <script>
-import CustomForm from './components/CustomForm.vue'
+// import CustomForm from './components/CustomForm.vue'
 import QuestionsForm from './components/QuestionsForm.vue'
 
 export default {
   name: 'App',
   components: {
-    CustomForm,
+    // CustomForm,
     QuestionsForm
   }
 }
