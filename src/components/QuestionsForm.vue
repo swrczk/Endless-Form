@@ -14,7 +14,9 @@
                 <div class="d-flex justify-content-end">
                     <b-button
                         variant="outline-secondary"
-                        @click="deleteQuestion(questionIndex)"
+                        @click="
+                            validateOnSubmit && deleteQuestion(questionIndex)
+                        "
                         class="border-0"
                     >
                         X
@@ -32,7 +34,10 @@
                         v-model="item.content"
                         type="text"
                         placeholder="Enter question"
-                        :state="isQuestionNotEmpty(questionIndex)"
+                        :state="
+                            validateOnSubmit &&
+                            isQuestionNotEmpty(questionIndex)
+                        "
                         :name="'q[' + questionIndex + ']'"
                         required
                     ></b-form-input>
@@ -54,14 +59,19 @@
                             placeholder="Enter answer"
                             :name="'a[' + questionIndex + '][' + index + ']'"
                             @change="onChangeInput(questionIndex)"
-                            :state="hasEnoughAnswers(questionIndex)"
+                            :state="
+                                validateOnSubmit &&
+                                hasEnoughAnswers(questionIndex)
+                            "
                         ></b-form-input>
                     </b-form-group>
 
                     <b-form-group
                         :label-for="'ch[' + questionIndex + '][' + index + ']'"
                         :invalid-feedback="invalidCorrectAnswerFeedback"
-                        :state="hasCorrectAnswer(questionIndex)"
+                        :state="
+                            validateOnSubmit && hasCorrectAnswer(questionIndex)
+                        "
                     >
                         <b-form-checkbox
                             v-model="answer.isCorrect"
@@ -80,7 +90,9 @@
                 <b-button @click="addQuestion" variant="primary">
                     Add question
                 </b-button>
-                <b-button type="submit" variant="primary">Submit</b-button>
+                <b-button @click="validateForm" type="submit" variant="primary"
+                    >Submit</b-button
+                >
                 <b-button type="reset" variant="danger">Reset</b-button>
             </div>
         </b-form>
@@ -101,6 +113,7 @@ export default {
                 }
             ],
             show: true,
+            validateOnSubmit: null,
             invalidQuestionFeedback:
                 "Question is not correct: enter content of question",
             invalidAnswersFeedback: "Not enough answers",
@@ -108,6 +121,9 @@ export default {
         }
     },
     methods: {
+        validateForm() {
+            this.validateOnSubmit = true
+        },
         onSubmit(event) {
             event.preventDefault()
             alert(JSON.stringify(this.form))
@@ -125,6 +141,7 @@ export default {
             this.show = false
             this.$nextTick(() => {
                 this.show = true
+                this.validateOnSubmit = null
             })
         },
         onChangeInput(index) {
