@@ -22,6 +22,7 @@
                         X
                     </b-button>
                 </div>
+                <h5 class="text-secondary">Assignment #{{ questionIndex +1 }}</h5>
 
                 <b-form-group
                     label="Enter the question:"
@@ -42,6 +43,23 @@
                         required
                     ></b-form-input>
                 </b-form-group>
+                
+                    <b-form-group
+                        :label-for="'ch[' + questionIndex + ']'"
+                        :invalid-feedback="invalidObligatoryQuestionFeedback"
+                        :state="
+                            validateOnSubmit && hasObligatoryQuestion()
+                        "
+                    >
+                        <b-form-checkbox
+                            v-model="item.isObligatory"
+                            :name="'ch[' + questionIndex + ']'"
+                            value.boolean="true"
+                            unchecked-value.boolean="false"
+                        >
+                            &nbsp; Obligatory
+                        </b-form-checkbox>
+                    </b-form-group>
 
                 <div
                     v-for="(answer, index) in item.answers"
@@ -109,6 +127,7 @@ export default {
             form: [
                 {
                     content: "",
+                    isObligatory: false,
                     answers: [{ value: "", isCorrect: false }]
                 }
             ],
@@ -117,7 +136,8 @@ export default {
             invalidQuestionFeedback:
                 "Question is not correct: enter content of question",
             invalidAnswersFeedback: "Not enough answers",
-            invalidCorrectAnswerFeedback: "At least one answer must be correct"
+            invalidCorrectAnswerFeedback: "At least one answer must be correct",
+            invalidObligatoryQuestionFeedback: "At least one question must be obligatory"
         }
     },
     methods: {
@@ -134,6 +154,7 @@ export default {
             this.form = [
                 {
                     content: "",
+                    isObligatory: false,
                     answers: [{ value: "", isCorrect: false }]
                 }
             ]
@@ -153,6 +174,7 @@ export default {
         addQuestion() {
             this.form.push({
                 content: "",
+                    isObligatory: false,
                 answers: [{ value: "", isCorrect: false }]
             })
         },
@@ -174,8 +196,17 @@ export default {
         },
         hasEnoughAnswers(questionIndex) {
             return this.form[questionIndex].answers.length >= 3
+        },
+        hasObligatoryQuestion(){
+            return this.form.reduce((acc, item) => {
+                if (item.isObligatory) {
+                    acc = true
+                }
+                return acc
+            }, false)
         }
-    }
+    },
+    
 }
 </script>
 <style scoped>
