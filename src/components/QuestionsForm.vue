@@ -1,28 +1,11 @@
 <template>
     <div>
-        <b-form
-            @submit="onSubmit"
-            @reset="onReset"
-            v-if="show"
-            class="m-5 align-self-end"
-        >
-            <div
-                v-for="(item, questionIndex) in form"
-                :key="questionIndex"
-                class="mx-5"
-            >
+        <b-form @submit="onSubmit" @reset="onReset" v-if="show" class="m-5 align-self-end">
+            <div v-for="(item, questionIndex) in form" :key="questionIndex" class="mx-5">
                 <div class="d-flex justify-content-end">
-                    <b-button
-                        variant="outline-secondary"
-                        @click="
-                            validateOnSubmit && deleteQuestion(questionIndex)
-                        "
-                        class="border-0"
-                    >
-                        X
-                    </b-button>
+                    <b-button variant="outline-secondary" @click="validateOnSubmit && deleteQuestion(questionIndex)" class="border-0"> X </b-button>
                 </div>
-                <h5 class="text-secondary">Assignment #{{ questionIndex +1 }}</h5>
+                <h5 class="text-secondary">Assignment #{{ questionIndex + 1 }}</h5>
 
                 <b-form-group
                     label="Enter the question:"
@@ -35,37 +18,28 @@
                         v-model="item.content"
                         type="text"
                         placeholder="Enter question"
-                        :state="
-                            validateOnSubmit &&
-                            isQuestionNotEmpty(questionIndex)
-                        "
+                        :state="validateOnSubmit && isQuestionNotEmpty(questionIndex)"
                         :name="'q[' + questionIndex + ']'"
                         required
                     ></b-form-input>
                 </b-form-group>
-                
-                    <b-form-group
-                        :label-for="'ch[' + questionIndex + ']'"
-                        :invalid-feedback="invalidObligatoryQuestionFeedback"
-                        :state="
-                            validateOnSubmit && hasObligatoryQuestion()
-                        "
-                    >
-                        <b-form-checkbox
-                            v-model="item.isObligatory"
-                            :name="'ch[' + questionIndex + ']'"
-                            value.boolean="true"
-                            unchecked-value.boolean="false"
-                        >
-                            &nbsp; Obligatory
-                        </b-form-checkbox>
-                    </b-form-group>
 
-                <div
-                    v-for="(answer, index) in item.answers"
-                    :key="index"
-                    class="my-2 ms-5"
+                <b-form-group
+                    :label-for="'ch[' + questionIndex + ']'"
+                    :invalid-feedback="invalidObligatoryQuestionFeedback"
+                    :state="validateOnSubmit && hasObligatoryQuestion()"
                 >
+                    <b-form-checkbox
+                        v-model="item.isObligatory"
+                        :name="'ch[' + questionIndex + ']'"
+                        value.boolean="true"
+                        unchecked-value.boolean="false"
+                    >
+                        &nbsp; Obligatory
+                    </b-form-checkbox>
+                </b-form-group>
+
+                <div v-for="(answer, index) in item.answers" :key="index" class="my-2 ms-5">
                     <b-form-group
                         label="Enter answer:"
                         :label-for="'a[' + questionIndex + '][' + index + ']'"
@@ -77,19 +51,14 @@
                             placeholder="Enter answer"
                             :name="'a[' + questionIndex + '][' + index + ']'"
                             @change="onChangeInput(questionIndex)"
-                            :state="
-                                validateOnSubmit &&
-                                hasEnoughAnswers(questionIndex)
-                            "
+                            :state="validateOnSubmit && hasEnoughAnswers(questionIndex)"
                         ></b-form-input>
                     </b-form-group>
 
                     <b-form-group
                         :label-for="'ch[' + questionIndex + '][' + index + ']'"
                         :invalid-feedback="invalidCorrectAnswerFeedback"
-                        :state="
-                            validateOnSubmit && hasCorrectAnswer(questionIndex)
-                        "
+                        :state="validateOnSubmit && hasCorrectAnswer(questionIndex)"
                     >
                         <b-form-checkbox
                             v-model="answer.isCorrect"
@@ -105,12 +74,8 @@
             </div>
 
             <div class="mx-5 gx-3">
-                <b-button @click="addQuestion" variant="primary">
-                    Add question
-                </b-button>
-                <b-button @click="validateForm" type="submit" variant="primary"
-                    >Submit</b-button
-                >
+                <b-button @click="addQuestion" variant="primary"> Add question </b-button>
+                <b-button @click="validateForm" type="submit" variant="primary">Submit</b-button>
                 <b-button type="reset" variant="danger">Reset</b-button>
             </div>
         </b-form>
@@ -133,8 +98,7 @@ export default {
             ],
             show: true,
             validateOnSubmit: null,
-            invalidQuestionFeedback:
-                "Question is not correct: enter content of question",
+            invalidQuestionFeedback: "Question is not correct: enter content of question",
             invalidAnswersFeedback: "Not enough answers",
             invalidCorrectAnswerFeedback: "At least one answer must be correct",
             invalidObligatoryQuestionFeedback: "At least one question must be obligatory"
@@ -166,22 +130,18 @@ export default {
             })
         },
         onChangeInput(index) {
-            this.form[index].answers = this.form[index].answers.filter(
-                (element) => element.value !== ""
-            )
+            this.form[index].answers = this.form[index].answers.filter((element) => element.value !== "")
             this.form[index].answers.push({ value: "", isCorrect: false })
         },
         addQuestion() {
             this.form.push({
                 content: "",
-                    isObligatory: false,
+                isObligatory: false,
                 answers: [{ value: "", isCorrect: false }]
             })
         },
         deleteQuestion(questionIndex) {
-            this.form = this.form.filter(
-                (item, index) => index !== questionIndex
-            )
+            this.form = this.form.filter((item, index) => index !== questionIndex)
         },
         isQuestionNotEmpty(questionIndex) {
             return this.form[questionIndex].content !== ""
@@ -197,7 +157,7 @@ export default {
         hasEnoughAnswers(questionIndex) {
             return this.form[questionIndex].answers.length >= 3
         },
-        hasObligatoryQuestion(){
+        hasObligatoryQuestion() {
             return this.form.reduce((acc, item) => {
                 if (item.isObligatory) {
                     acc = true
@@ -205,8 +165,7 @@ export default {
                 return acc
             }, false)
         }
-    },
-    
+    }
 }
 </script>
 <style scoped>
