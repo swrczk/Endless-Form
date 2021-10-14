@@ -1,14 +1,25 @@
 <template>
     <div>
+        <ObligatorySectionModal />
+        <ObligatoryQuestionModal />
+        <NormalSectionModal />
+
         <b-form @submit="onSubmit" @reset="onReset" v-if="show" class="m-5 align-self-end">
             <div v-for="(_, difficulty) in 6" :key="difficulty">
-                <h4 v-if="difficulty === 0">Obligatory questions</h4>
-                <h4 v-else>
-                    <span v-for="n in difficulty" :key="n"> <b-icon-star-fill class="text-warning"></b-icon-star-fill></span>
-                </h4>
+                <div v-if="difficulty === 0" class="d-flex justify-content-between">
+                    <h4>Obligatory questions</h4>
+                    <b-button variant="outline-secondary" v-b-modal.obligatorySectionModal class="border-0"> ? </b-button>
+                </div>
+                <div v-else class="d-flex justify-content-between">
+                    <h4>
+                        <span v-for="n in difficulty" :key="n"> <b-icon-star-fill class="text-warning"></b-icon-star-fill></span>
+                    </h4>
+                    <b-button variant="outline-secondary" v-b-modal.normalSectionModal class="border-0"> ? </b-button>
+                </div>
                 <b-button @click="addQuestion(difficulty)" variant="primary"> Add question </b-button>
                 <div v-for="(item, questionIndex) in form[difficulty]" :key="questionIndex" class="mx-5">
                     <div class="d-flex justify-content-end">
+                        <b-button variant="outline-secondary" v-b-modal.obligatoryQuestion class="border-0"> ? </b-button>
                         <b-button variant="outline-secondary" @click="deleteQuestion(difficulty, questionIndex)" class="border-0"> X </b-button>
                     </div>
                     <div class="d-flex justify-content-between">
@@ -104,7 +115,15 @@
 </template>
 
 <script>
+import ObligatorySectionModal from "./formModals/ObligatorySectionModal"
+import ObligatoryQuestionModal from "./formModals/ObligatoryQuestionModal"
+import NormalSectionModal from "./formModals/NormalSectionModal"
 export default {
+    components: {
+        ObligatorySectionModal,
+        ObligatoryQuestionModal,
+        NormalSectionModal
+    },
     data() {
         return {
             form: [
