@@ -5,6 +5,22 @@
         <NormalSectionModal />
 
         <b-form @submit="onSubmit" @reset="onReset" v-if="show" class="m-5 align-self-end">
+            <div class="file py-2">
+                <h4>Upload your study materials</h4>
+                <p>
+                    To provide better question generation, please, send to us your material. It can be an article or part of a handbook, anything that
+                    contains information for test topic
+                </p>
+
+                <b-form-file
+                    v-model="files"
+                    placeholder="Choose a file or drop it here..."
+                    drop-placeholder="Drop file here..."
+                    accept="text/*"
+                    multiple
+                ></b-form-file>
+                <div class="p-3">Selected file: {{ files ? files.map(file=>file.name) : "" }}</div>
+            </div>
             <div v-for="(_, difficulty) in 6" :key="difficulty">
                 <div v-if="difficulty === 0" class="d-flex justify-content-between">
                     <h4>Obligatory questions</h4>
@@ -126,6 +142,7 @@ export default {
     },
     data() {
         return {
+            files: [],
             form: [
                 [
                     {
