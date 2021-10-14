@@ -11,7 +11,17 @@
                     <div class="d-flex justify-content-end">
                         <b-button variant="outline-secondary" @click="deleteQuestion(difficulty, questionIndex)" class="border-0"> X </b-button>
                     </div>
-                    <h5 class="text-secondary">Assignment #{{ questionIndex + 1 }}</h5>
+                    <div class="d-flex justify-content-between">
+                        <h5 class="text-secondary">Assignment #{{ questionIndex + 1 }}</h5>
+                        <b-form-rating
+                            v-if="difficulty === 0"
+                            v-model="item.difficulty"
+                            inline
+                            no-border
+                            variant="warning"
+                            class="mb-2"
+                        ></b-form-rating>
+                    </div>
 
                     <b-form-group
                         label="Enter the question:"
@@ -133,7 +143,7 @@ export default {
                     {
                         content: "",
                         isImportant: ix === 0 || false,
-                        dificulty: ix,
+                        difficulty: ix,
                         answers: [{ value: "", isCorrect: false }]
                     }
                 ])
