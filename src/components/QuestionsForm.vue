@@ -4,7 +4,7 @@
             <div v-for="(_, difficulty) in 6" :key="difficulty">
                 <h4 v-if="difficulty === 0">Obligatory questions</h4>
                 <h4 v-else>
-                    <span v-for="n in difficulty" :key="n"> <b-icon-star-fill></b-icon-star-fill></span>
+                    <span v-for="n in difficulty" :key="n"> <b-icon-star-fill class="text-warning"></b-icon-star-fill></span>
                 </h4>
                 <b-button @click="addQuestion(difficulty)" variant="primary"> Add question </b-button>
                 <div v-for="(item, questionIndex) in form[difficulty]" :key="questionIndex" class="mx-5">
@@ -30,20 +30,22 @@
                         ></b-form-input>
                     </b-form-group>
 
-                    <b-form-group
-                        :label-for="'ch[' + questionIndex + ']'"
-                        :invalid-feedback="invalidObligatoryQuestionFeedback"
-                        :state="validateOnSubmit && hasObligatoryQuestion(difficulty)"
-                    >
-                        <b-form-checkbox
-                            v-model="item.isObligatory"
-                            :name="'ch[' + questionIndex + ']'"
-                            value.boolean="true"
-                            unchecked-value.boolean="false"
+                    <div v-if="difficulty !== 0">
+                        <b-form-group
+                            :label-for="'ch[' + questionIndex + ']'"
+                            :invalid-feedback="invalidImportantQuestionFeedback"
+                            :state="validateOnSubmit && hasImportantQuestion(difficulty)"
                         >
-                            &nbsp; Obligatory
-                        </b-form-checkbox>
-                    </b-form-group>
+                            <b-form-checkbox
+                                v-model="item.isImportant"
+                                :name="'ch[' + questionIndex + ']'"
+                                value.boolean="true"
+                                unchecked-value.boolean="false"
+                            >
+                                &nbsp; Important question
+                            </b-form-checkbox>
+                        </b-form-group>
+                    </div>
 
                     <div v-for="(answer, index) in item.answers" :key="index" class="my-2 ms-5">
                         <b-form-group
@@ -80,7 +82,7 @@
                 <hr class="my-5" />
             </div>
 
-            <div class="mx-5 gx-3">
+            <div class="d-flex justify-content-end">
                 <b-button @click="validateForm" type="submit" variant="primary">Submit</b-button>
                 <b-button type="reset" variant="danger">Reset</b-button>
             </div>
@@ -99,7 +101,7 @@ export default {
                 [
                     {
                         content: "",
-                        isObligatory: false,
+                        isImportant: false,
                         difficulty: 0,
                         answers: [{ value: "", isCorrect: false }]
                     }
@@ -110,7 +112,7 @@ export default {
             invalidQuestionFeedback: "Question is not correct: enter content of question",
             invalidAnswersFeedback: "Not enough answers",
             invalidCorrectAnswerFeedback: "At least one answer must be correct",
-            invalidObligatoryQuestionFeedback: "At least one question must be obligatory"
+            invalidImportantQuestionFeedback: "At least one question must be important"
         }
     },
     mounted() {
@@ -130,7 +132,7 @@ export default {
                 this.form.push([
                     {
                         content: "",
-                        isObligatory: false,
+                        isImportant: ix === 0 || false,
                         dificulty: ix,
                         answers: [{ value: "", isCorrect: false }]
                     }
@@ -156,7 +158,7 @@ export default {
         addQuestion(difficulty) {
             this.form[difficulty].push({
                 content: "",
-                isObligatory: false,
+                isImportant: false,
                 difficulty,
                 answers: [{ value: "", isCorrect: false }]
             })
@@ -179,9 +181,9 @@ export default {
         hasEnoughAnswers(difficulty, questionIndex) {
             return this.form[difficulty][questionIndex].answers.length >= 3
         },
-        hasObligatoryQuestion(difficulty) {
+        hasImportantQuestion(difficulty) {
             return this.form[difficulty].reduce((acc, item) => {
-                if (item.isObligatory) {
+                if (item.isImportant) {
                     acc = true
                 }
                 return acc
